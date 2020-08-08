@@ -16,12 +16,13 @@ func Run(seeds ...Request) {
 		requests = requests[:1]
 
 		log.Printf("Fetching %s", r.Url)
+		//爬取url且转utf8
 		body, err := fetcher.Fetch(r.Url)
 		if err != nil {
 			log.Printf("Fetcher: error fetching url %s: %v", r.Url, err)
 			continue
 		}
-
+		//解析
 		parserResult := r.ParserFunc(body)
 		requests = append(requests, parserResult.Requests...)
 		for _, item := range parserResult.Items {
