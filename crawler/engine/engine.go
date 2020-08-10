@@ -13,7 +13,7 @@ func Run(seeds ...Request) {
 
 	for len(requests) > 0 {
 		r := requests[0]
-		requests = requests[:1]
+		requests = requests[1:]
 
 		log.Printf("Fetching %s", r.Url)
 		//爬取url且转utf8
