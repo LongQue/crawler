@@ -1,6 +1,9 @@
 package engine
 
-import "log"
+import (
+	"awesomeProject1/crawler/model"
+	"log"
+)
 
 type ConcurrentEngine struct {
 	Scheduler   Scheduler
@@ -22,18 +25,30 @@ func (e *ConcurrentEngine) Run(seeds ...Request) {
 	}
 
 	for _, r := range seeds {
+		if isDuplicate(r.Url) {
+			continue
+		}
 		e.Scheduler.Submit(r)
 	}
 
-	itemCount := 0
+	profileCount := 0
 	for {
 		result := <-out
 		for _, item := range result.Items {
-			log.Printf("Got item #%d: %v", itemCount, item)
-			itemCount++
+			if _, ok := item.(model.Profile); ok {
+
+				log.Printf("Got item #%d: %v", profileCount, item)
+				profileCount++
+			}
 		}
 
+		//URL dedup
+
 		for _, request := range result.Requests {
+			if isDuplicate(request.Url) {
+				log.Printf("Dupliate request: %s", request.Url)
+				continue
+			}
 			e.Scheduler.Submit(request)
 		}
 	}
@@ -52,4 +67,15 @@ func createWorker(out chan ParseResult, s Scheduler) {
 			out <- result
 		}
 	}()
+}
+
+var visitedUrls = make(map[string]bool)
+
+func isDuplicate(url string) bool {
+	if visitedUrls[url] {
+		return true
+	}
+
+	visitedUrls[url] = true
+	return false
 }

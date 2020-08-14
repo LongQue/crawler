@@ -9,10 +9,14 @@ import (
 func main() {
 	concurrentEngine := engine.ConcurrentEngine{
 		Scheduler:   &scheduler.QueuedScheduler{},
-		WorkerCount: 10,
+		WorkerCount: 100,
 	}
+	//concurrentEngine.Run(engine.Request{
+	//	Url:        "http://localhost:8080/mock/www.zhenai.com/zhenghun",
+	//	ParserFunc: parser.ParseCityList,
+	//})
 	concurrentEngine.Run(engine.Request{
-		Url:        "http://localhost:8080/mock/www.zhenai.com/zhenghun",
-		ParserFunc: parser.ParseCityList,
+		Url:        "http://localhost:8080/mock/www.zhenai.com/zhenghun/shanghai",
+		ParserFunc: parser.ParseCity,
 	})
 }
